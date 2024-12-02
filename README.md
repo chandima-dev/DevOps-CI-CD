@@ -1,3 +1,53 @@
+# CI/CD Pipeline for Microservice Deployment to GKE
+
+This repository demonstrates a CI/CD pipeline for deploying a microservice to a Google Kubernetes Engine (GKE) cluster using GitHub Actions and ArgoCD. The pipeline performs the following tasks:
+
+1. **Linting and Testing**  
+   Ensures code quality with linting and automated testing.
+
+2. **Building and Pushing Docker Image**  
+   Builds a Docker image and pushes it to Google Container Registry (GCR).
+
+3. **Deploying to GKE using ArgoCD**  
+   Syncs and deploys the latest image to a GKE cluster through ArgoCD.
+
+---
+
+## **Workflow Overview**
+
+The pipeline is defined in `.github/workflows/ci-cd.yml` with three main jobs:
+
+### 1. **Lint and Test**
+- Runs `npm lint` to check for code quality issues.
+- Runs `npm test` to validate the application through automated tests.
+
+### 2. **Build and Push**
+- Authenticates with GCR using a service account key stored in GitHub Secrets.
+- Builds and tags a Docker image.
+- Pushes the image to GCR.
+
+### 3. **Deploy**
+- Installs the ArgoCD CLI.
+- Logs into ArgoCD using credentials stored in GitHub Secrets.
+- Syncs the application with the GKE cluster.
+
+---
+
+## **Setup Instructions**
+
+### 1. **Prerequisites**
+- A GKE cluster with ArgoCD installed.
+- Google Cloud SDK installed and configured locally.
+- The following GitHub Secrets configured:
+  - `GCP_SA_KEY`: Service account key JSON for GCP.
+  - `GCP_PROJECT_ID`: The ID of your GCP project.
+  - `ARGOCD_PASSWORD`: Password for ArgoCD admin.
+
+### 2. **Configure ArgoCD**
+- Install ArgoCD in your GKE cluster:
+  ```bash
+  kubectl create namespace argocd
+  kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 ---
 
