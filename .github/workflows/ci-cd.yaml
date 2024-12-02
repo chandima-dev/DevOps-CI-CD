@@ -34,7 +34,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Authenticate with GCR
+      - name: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
@@ -57,7 +57,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.5.0/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USERNAME }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure
+
       - name: Deploy to GKE using ArgoCD
         run: |
           argocd app sync my-node-app
-          argocd app wait my-node-app --health
+          argocd app wait my-node-app --health --timeout 600s
