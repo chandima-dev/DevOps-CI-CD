@@ -43,10 +43,12 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build and Tag Docker Image
-        run: docker build -t gcr.io/$GCP_PROJECT_ID/node-microservice:${{ github.sha }} .
+        run: docker build -t gcr.io/$GCP_PROJECT_ID/node-microservice:$GITHUB_SHA -t gcr.io/$GCP_PROJECT_ID/node-microservice:latest .
+
 
       - name: Push Docker Image to GCR
-        run: docker push gcr.io/$GCP_PROJECT_ID/node-microservice:${{ github.sha }}
+        run: docker push gcr.io/$GCP_PROJECT_ID/node-microservice:$GITHUB_SHA
+
 
   deploy:
     needs: build-and-push
