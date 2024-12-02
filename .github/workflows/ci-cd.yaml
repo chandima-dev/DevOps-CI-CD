@@ -46,7 +46,9 @@ jobs:
         run: echo "GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}"  # This will not display the secret value but will confirm if it's accessed correctly.
 
       - name: Build and Tag Docker Image
-        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-microservice:${{ github.sha }} -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-microservice:latest .
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-microservice:${{ github.sha }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-microservice:latest .
 
       - name: Push Docker Image to GCR
         run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-microservice:${{ github.sha }}
