@@ -5,7 +5,7 @@ export default {
   languageOptions: {
     globals: {
       ...globals.node,  // Include all Node.js globals (e.g., require, module)
-      structuredClone: 'readonly',  // Add structuredClone as a global variable
+      structuredClone: 'readonly', // Add structuredClone as a global
     },
     parserOptions: {
       ecmaVersion: 12,  // ECMAScript 2021 syntax
@@ -13,9 +13,10 @@ export default {
     },
   },
   rules: {
-    'no-undef': 'error',  // example rule, ensure undefined variables are caught
-    'no-unused-vars': 'warn',  // warn about unused variables
-    'eqeqeq': 'error',  // enforce strict equality
+    // Manually add the recommended ESLint rules here
+    'no-undef': 'error', // example rule, ensure undefined variables are caught
+    'no-unused-vars': 'warn', // warn about unused variables
+    'eqeqeq': 'error', // enforce strict equality
     // You can add more recommended rules manually or according to your needs
   },
 };
