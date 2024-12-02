@@ -1,0 +1,61 @@
+name: CI/CD Pipeline for Node.js Microservice
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Linting
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test
+
+  build-and-push:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Authenticate with GCR
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker to use GCR
+        run: gcloud auth configure-docker
+
+      - name: Build and Tag Docker Image
+        run: docker build -t gcr.io/$GCP_PROJECT_ID/node-microservice:${{ github.sha }} .
+
+      - name: Push Docker Image to GCR
+        run: docker push gcr.io/$GCP_PROJECT_ID/node-microservice:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to GKE using ArgoCD
+        run: |
+          argocd app sync my-node-app
+          argocd app wait my-node-app --health
